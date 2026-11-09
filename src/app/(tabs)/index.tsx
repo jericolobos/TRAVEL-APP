@@ -1,25 +1,11 @@
 import { View, StyleSheet, FlatList, SafeAreaView, Text } from "react-native";
-import { useRouter } from "expo-router"; // Import the router hook
+import { useRouter } from "expo-router";
 import TripCard from "../../components/TripCard";
-import { TripEvent } from "../../types";
-
-const MOCK_TRIPS: TripEvent[] = [
-  {
-    id: "1",
-    title: "Weekend in Kyoto",
-    date: new Date("2026-11-15"),
-    notes: "Book Shinkansen tickets beforehand.",
-  },
-  {
-    id: "2",
-    title: "Palawan Beach Getaway",
-    date: new Date("2026-12-10"),
-    notes: "Bring snorkeling gear.",
-  },
-];
+import { useTrips } from "../../utils/TripContext"; // Import the hook
 
 export default function HomeScreen() {
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
+  const { trips } = useTrips(); // Pull global state instead of local mock data
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -28,12 +14,12 @@ export default function HomeScreen() {
       </View>
 
       <FlatList
-        data={MOCK_TRIPS}
+        // Feed the global state to the FlatList
+        data={trips}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TripCard
             trip={item}
-            // Push the user to the dynamic route using the item's ID
             onPress={() => router.push(`/trip/${item.id}`)}
           />
         )}

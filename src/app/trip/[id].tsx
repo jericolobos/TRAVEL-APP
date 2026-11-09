@@ -1,29 +1,13 @@
 import { View, Text, StyleSheet } from "react-native";
 import { useLocalSearchParams, Stack } from "expo-router";
-import { TripEvent } from "../../types";
-
-// We are temporarily copying the mock data here until we set up global state
-const MOCK_TRIPS: TripEvent[] = [
-  {
-    id: "1",
-    title: "Weekend in Kyoto",
-    date: new Date("2026-11-15"),
-    notes: "Book Shinkansen tickets beforehand.",
-  },
-  {
-    id: "2",
-    title: "Palawan Beach Getaway",
-    date: new Date("2026-12-10"),
-    notes: "Bring snorkeling gear.",
-  },
-];
+import { useTrips } from "../../utils/TripContext"; // Import the hook
 
 export default function TripDetailsScreen() {
-  // Extract the ID from the URL path
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { trips } = useTrips(); // Pull global state
 
-  // Find the matching trip in our data
-  const trip = MOCK_TRIPS.find((t) => t.id === id);
+  // Find the trip from the global state rather than a local mock array
+  const trip = trips.find((t) => t.id === id);
 
   if (!trip) {
     return (
@@ -36,7 +20,6 @@ export default function TripDetailsScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Dynamically set the header title to the trip name */}
       <Stack.Screen options={{ title: trip.title }} />
 
       <View style={styles.card}>
@@ -53,11 +36,7 @@ export default function TripDetailsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-    padding: 16,
-  },
+  container: { flex: 1, backgroundColor: "#f5f5f5", padding: 16 },
   card: {
     backgroundColor: "#ffffff",
     borderRadius: 12,
