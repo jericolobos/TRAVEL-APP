@@ -1,4 +1,5 @@
 import { View, StyleSheet, FlatList, SafeAreaView, Text } from "react-native";
+import { useRouter } from "expo-router"; // Import the router hook
 import TripCard from "../../components/TripCard";
 import { TripEvent } from "../../types";
 
@@ -18,6 +19,8 @@ const MOCK_TRIPS: TripEvent[] = [
 ];
 
 export default function HomeScreen() {
+  const router = useRouter(); // Initialize the router
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.headerContainer}>
@@ -30,7 +33,8 @@ export default function HomeScreen() {
         renderItem={({ item }) => (
           <TripCard
             trip={item}
-            onPress={() => console.log(`Clicked on ${item.title}`)}
+            // Push the user to the dynamic route using the item's ID
+            onPress={() => router.push(`/trip/${item.id}`)}
           />
         )}
         contentContainerStyle={styles.listContent}
