@@ -1,13 +1,33 @@
-import { View, Text, StyleSheet } from "react-native";
-import { useLocalSearchParams, Stack } from "expo-router";
-import { useTrips } from "../../utils/TripContext"; // Import the hook
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { useLocalSearchParams, Stack, useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { useTrips } from "../../utils/TripContext";
 
 export default function TripDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { trips } = useTrips(); // Pull global state
+  const router = useRouter(); // Initialize router to navigate back after deletion
+  const { trips, deleteTrip } = useTrips();
 
-  // Find the trip from the global state rather than a local mock array
   const trip = trips.find((t) => t.id === id);
+
+  // The delete confirmation dialog
+  const handleDelete = () => {
+    Alert.alert(
+      "Delete Trip",
+      "Are you sure you want to remove this trip from your itinerary?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive", // Renders red on iOS
+          onPress: () => {
+            deleteTrip(id); // Remove from global state
+            router.back(); // Send the user back to the Home screen
+          },
+        },
+      ],
+    );
+  };
 
   if (!trip) {
     return (
@@ -31,6 +51,12 @@ export default function TripDetailsScreen() {
         <Text style={styles.sectionHeader}>Trip Notes</Text>
         <Text style={styles.notes}>{trip.notes || "No notes added yet."}</Text>
       </View>
+
+      {/* Delete Button Container */}
+      <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+        <Ionicons name="trash-outline" size={20} color="#ff3b30" />
+        <Text style={styles.deleteText}>Delete Trip</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -58,4 +84,21 @@ const styles = StyleSheet.create({
   },
   notes: { fontSize: 16, color: "#444", lineHeight: 24 },
   errorText: { fontSize: 18, color: "#ff3b30" },
+
+  // New styles for the delete button
+  deleteButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 24,
+    padding: 16,
+    backgroundColor: "#ffebe9",
+    borderRadius: 8,
+    gap: 8,
+  },
+  deleteText: {
+    color: "#ff3b30",
+    fontSize: 16,
+    fontWeight: "600",
+  },
 });
