@@ -9,7 +9,6 @@ interface TripContextType {
 
 const TripContext = createContext<TripContextType | undefined>(undefined);
 
-// Added the location object with coordinates to the initial data
 const INITIAL_TRIPS: TripEvent[] = [
   {
     id: "1",
@@ -17,6 +16,33 @@ const INITIAL_TRIPS: TripEvent[] = [
     date: new Date("2026-11-15"),
     notes: "Book Shinkansen tickets beforehand.",
     location: { name: "Kiyomizu-dera", latitude: 34.9948, longitude: 135.785 },
+    // Injecting our timeline data here:
+    itinerary: [
+      {
+        id: "101",
+        time: new Date("2026-11-15T10:00:00"),
+        title: "Flight to KIX",
+        category: "flight",
+      },
+      {
+        id: "102",
+        time: new Date("2026-11-15T14:00:00"),
+        title: "Check-in at Ryokan",
+        category: "lodging",
+      },
+      {
+        id: "103",
+        time: new Date("2026-11-15T18:30:00"),
+        title: "Kaiseki Dinner",
+        category: "dining",
+      },
+      {
+        id: "104",
+        time: new Date("2026-11-16T09:00:00"),
+        title: "Fushimi Inari Shrine",
+        category: "activity",
+      },
+    ],
   },
   {
     id: "2",
@@ -37,13 +63,10 @@ const INITIAL_TRIPS: TripEvent[] = [
 export function TripProvider({ children }: { children: ReactNode }) {
   const [trips, setTrips] = useState<TripEvent[]>(INITIAL_TRIPS);
 
-  const addTrip = (newTrip: TripEvent) => {
-    setTrips((prevTrips) => [...prevTrips, newTrip]);
-  };
-
-  const deleteTrip = (id: string) => {
-    setTrips((prevTrips) => prevTrips.filter((trip) => trip.id !== id));
-  };
+  const addTrip = (newTrip: TripEvent) =>
+    setTrips((prev) => [...prev, newTrip]);
+  const deleteTrip = (id: string) =>
+    setTrips((prev) => prev.filter((trip) => trip.id !== id));
 
   return (
     <TripContext.Provider value={{ trips, addTrip, deleteTrip }}>
@@ -54,8 +77,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
 
 export function useTrips() {
   const context = useContext(TripContext);
-  if (context === undefined) {
+  if (context === undefined)
     throw new Error("useTrips must be used within a TripProvider");
-  }
   return context;
 }
