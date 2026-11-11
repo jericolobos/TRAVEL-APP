@@ -1,37 +1,36 @@
 import { StyleSheet, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import { Location } from "../../types";
-import CustomMarker from "../../components/CustomMarker"; // Import the new component
-
-const SAVED_LOCATIONS: Location[] = [
-  { name: "Kiyomizu-dera Temple", latitude: 34.9948, longitude: 135.785 },
-  { name: "El Nido, Palawan", latitude: 11.1784, longitude: 119.3956 },
-  { name: "Cebu City Basecamp", latitude: 10.3157, longitude: 123.8854 },
-];
+import { useTrips } from "../../utils/TripContext"; // Import the global state hook
+import CustomMarker from "../../components/CustomMarker";
 
 export default function MapScreen() {
+  const { trips } = useTrips(); // Pull the live data
+
+  // Filter the trips to only include those that have coordinates attached
+  const mappableTrips = trips.filter((trip) => trip.location !== undefined);
+
   return (
     <View style={styles.container}>
       <MapView
         style={styles.map}
         initialRegion={{
-          latitude: 10.3157,
+          latitude: 10.3157, // Centers the map roughly on Cebu initially
           longitude: 123.8854,
           latitudeDelta: 25.0,
           longitudeDelta: 25.0,
         }}
       >
-        {SAVED_LOCATIONS.map((location, index) => (
+        {/* Render a marker for every trip that has a location */}
+        {mappableTrips.map((trip) => (
           <Marker
-            key={index}
+            key={trip.id}
             coordinate={{
-              latitude: location.latitude,
-              longitude: location.longitude,
+              latitude: trip.location!.latitude,
+              longitude: trip.location!.longitude,
             }}
-            title={location.name}
-            description="Saved trip location"
+            title={trip.title} // Uses the trip title for the map pop-up
+            description={trip.location!.name} // Uses the specific place name for the subtitle
           >
-            {/* Placing the custom component inside the Marker overwrites the default pin */}
             <CustomMarker />
           </Marker>
         ))}

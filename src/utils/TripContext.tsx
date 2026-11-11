@@ -1,34 +1,39 @@
 import React, { createContext, useState, useContext, ReactNode } from "react";
 import { TripEvent } from "../types";
 
-// Define the shape of our context
 interface TripContextType {
   trips: TripEvent[];
-  // We are putting these here now so we can use them later when building the Add/Edit forms
   addTrip: (trip: TripEvent) => void;
   deleteTrip: (id: string) => void;
 }
 
-// Create the context with a default undefined value
 const TripContext = createContext<TripContextType | undefined>(undefined);
 
-// Define the initial state (our mock data)
+// Added the location object with coordinates to the initial data
 const INITIAL_TRIPS: TripEvent[] = [
   {
     id: "1",
     title: "Weekend in Kyoto",
     date: new Date("2026-11-15"),
     notes: "Book Shinkansen tickets beforehand.",
+    location: { name: "Kiyomizu-dera", latitude: 34.9948, longitude: 135.785 },
   },
   {
     id: "2",
     title: "Palawan Beach Getaway",
     date: new Date("2026-12-10"),
     notes: "Bring snorkeling gear.",
+    location: { name: "El Nido", latitude: 11.1784, longitude: 119.3956 },
+  },
+  {
+    id: "3",
+    title: "Cebu Code Camp",
+    date: new Date("2026-11-20"),
+    notes: "Work on React Native internship project.",
+    location: { name: "Cebu IT Park", latitude: 10.3283, longitude: 123.9058 },
   },
 ];
 
-// The Provider component that will wrap our application
 export function TripProvider({ children }: { children: ReactNode }) {
   const [trips, setTrips] = useState<TripEvent[]>(INITIAL_TRIPS);
 
@@ -47,7 +52,6 @@ export function TripProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Custom hook to make importing the context cleaner in our screens
 export function useTrips() {
   const context = useContext(TripContext);
   if (context === undefined) {
